@@ -1,7 +1,7 @@
 // third party
 const http = require("http");
-const url=require('url')
-const {StringDecoder}=require('string_decoder')
+
+const {handler}=require('./helpers/handleReqRes')
 
 
 // module or scaffolding
@@ -14,39 +14,13 @@ app.config = {
 
 // server
 app.createServer = () => {
-  const server=http.createServer(app.handleReqRes)
+  const server=http.createServer(handler)
   server.listen(app.config.port,()=>{
     console.log("listening on port "+app.config.port)
     
   });
 };
 
-const decoder=new StringDecoder('utf-8')
-let realData=""
 
-app.handleReqRes =  (req, res) => {
-    const parsedURL=url.parse(req.url,true)
-    const path=parsedURL.pathname 
-    const trimmedPath=path.replace(/^\/+|\/+$/g,"")
-    const query=parsedURL.query 
-    const headerObject=req.headers
-
-    const requestedProperties={
-        path,
-        trimmedPath,
-        query,
-        headerObject
-    }
-    console.log(requestedProperties)
-
-    req.on('data',(buffer)=>{
-        realData+=decoder.write(buffer)
-    })
-
-    req.on('end',()=>{
-        realData+=decoder.end()
-        res.end("hello hadi")
-    })
-};
 
 app.createServer()
